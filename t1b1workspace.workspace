@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Workspace Name="t1b1workspace" Database="./t1b1workspace.tags">
+  <Project Name="t1b1dataprocessor" Path="t1b1dataprocessor/t1b1dataprocessor.project" Active="No"/>
+  <Project Name="t1b1dataprocessortests" Path="t1b1dataprocessortests/t1b1dataprocessortests.project" Active="Yes"/>
+  <Project Name="sqlwrapper" Path="sqlwrapper/sqlwrapper.project" Active="No"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Project Name="t1b1dataprocessor" ConfigName="Debug"/>
+      <Project Name="t1b1dataprocessortests" ConfigName="Debug"/>
+      <Project Name="sqlwrapper" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="no">
+      <Project Name="t1b1dataprocessor" ConfigName="Release"/>
+      <Project Name="t1b1dataprocessortests" ConfigName="Release"/>
+      <Project Name="sqlwrapper" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

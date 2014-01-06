@@ -19,6 +19,7 @@ TEST(PrimitiveScoreTest, SmallerThan)
 	EXPECT_TRUE((*fourScore)  < (*oneScore));          
 }
 
+
 TEST(PrimitiveScoreTest, Equality) 
 {
   boost::scoped_ptr<PrimitiveScore> oneScore(new PrimitiveScore(true, 1, "B"));

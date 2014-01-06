@@ -48,3 +48,48 @@ TEST(ScoreCardTest, SmallerThan)
   EXPECT_TRUE(*twoScoreCard < *oneScoreCard);
 }
 
+
+TEST(ScoreCardTest, PolePosition) 
+{
+  boost::shared_ptr<Climber> oneClimber(new Climber());
+  oneClimber->SetFirstname("Mark");
+  oneClimber->SetLastname("Weber");
+  oneClimber->SetSex(male);
+  oneClimber->SetNationality("NED");
+  boost::shared_ptr<EnrolledClimber> oneEnrolledClimber(new EnrolledClimber(10, oneClimber));
+  boost::scoped_ptr<ScoreCard> oneScoreCard(new ScoreCard(oneEnrolledClimber, 2, 1));
+  EXPECT_TRUE(oneScoreCard->IsEmpty());
+
+  boost::shared_ptr<BoulderScore> oneBoulderScore(new BoulderScore(1, false));
+  oneBoulderScore->BonusHit(1);
+  oneBoulderScore->TopHit(1);
+  oneScoreCard->AddScore(oneBoulderScore);
+  EXPECT_FALSE(oneScoreCard->IsEmpty());
+  
+  boost::shared_ptr<BoulderScore> twoBoulderScore(new BoulderScore(2, false));
+  twoBoulderScore->BonusHit(1);
+  twoBoulderScore->TopHit(1);
+  oneScoreCard->AddScore(twoBoulderScore);
+  
+ 
+  boost::shared_ptr<Climber> twoClimber(new Climber());
+  twoClimber->SetFirstname("Piet");
+  twoClimber->SetLastname("Snot");
+  twoClimber->SetSex(male);
+  twoClimber->SetNationality("NED");
+  boost::shared_ptr<EnrolledClimber> twoEnrolledClimber(new EnrolledClimber(10, twoClimber));
+  boost::scoped_ptr<ScoreCard> twoScoreCard(new ScoreCard(twoEnrolledClimber, 2, 2));
+  
+  boost::shared_ptr<BoulderScore> threeBoulderScore(new BoulderScore(1, false));
+  threeBoulderScore->BonusHit(1);
+  threeBoulderScore->TopHit(1);
+  twoScoreCard->AddScore(threeBoulderScore);
+
+  boost::shared_ptr<BoulderScore> fourBoulderScore(new BoulderScore(2, false));
+  fourBoulderScore->BonusHit(1);
+  fourBoulderScore->TopHit(1);
+  twoScoreCard->AddScore(fourBoulderScore);
+
+  EXPECT_TRUE(*twoScoreCard < *oneScoreCard);
+}
+

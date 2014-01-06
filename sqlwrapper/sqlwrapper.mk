@@ -5,18 +5,17 @@
 ## Debug
 ProjectName            :=sqlwrapper
 ConfigurationName      :=Debug
+WorkspacePath          := "/home/mark/t1b1ws"
+ProjectPath            := "/home/mark/t1b1ws/sqlwrapper"
 IntermediateDirectory  :=./Debug
 OutDir                 := $(IntermediateDirectory)
-WorkspacePath          := "/home/mark/t1b1workspace"
-ProjectPath            := "/home/mark/t1b1workspace/sqlwrapper"
 CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Mark
-Date                   :=10/27/2013
+Date                   :=01/06/14
 CodeLitePath           :="/home/mark/.codelite"
 LinkerName             :=g++
-ArchiveTool            :=ar rcus
 SharedObjectLinkerName :=g++ -shared -fPIC
 ObjectSuffix           :=.o
 DependSuffix           :=.o.d
@@ -28,36 +27,57 @@ OutputSwitch           :=-o
 LibraryPathSwitch      :=-L
 PreprocessorSwitch     :=-D
 SourceSwitch           :=-c 
-CompilerName           :=g++
-C_CompilerName         :=gcc
 OutputFile             :=$(IntermediateDirectory)/$(ProjectName)
 Preprocessors          :=
 ObjectSwitch           :=-o 
 ArchiveOutputSwitch    := 
 PreprocessOnlySwitch   :=-E 
+ObjectsFileList        :="sqlwrapper.txt"
+PCHCompileFlags        :=
 MakeDirCommand         :=mkdir -p
-CmpOptions             := -g -lmysqlcppcon $(Preprocessors)
 LinkOptions            :=  
-IncludePath            :=  "$(IncludeSwitch)." "$(IncludeSwitch)." 
-RcIncludePath          :=
-Libs                   :=
-LibPath                := "$(LibraryPathSwitch)." "$(LibraryPathSwitch)/usr/lib" 
+IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). 
+IncludePCH             := 
+RcIncludePath          := 
+Libs                   := 
+ArLibs                 :=  
+LibPath                := $(LibraryPathSwitch). $(LibraryPathSwitch)/usr/lib 
+
+##
+## Common variables
+## AR, CXX, CC, AS, CXXFLAGS and CFLAGS can be overriden using an environment variables
+##
+AR       := ar rcus
+CXX      := g++
+CC       := gcc
+CXXFLAGS :=  -g -lmysqlcppcon $(Preprocessors)
+CFLAGS   :=  -g -lmysqlcppcon $(Preprocessors)
+ASFLAGS  := 
+AS       := as
 
 
 ##
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
+
+
 Objects=
 
 ##
 ## Main Build Targets 
 ##
+.PHONY: all clean PreBuild PrePreBuild PostBuild
 all: $(IntermediateDirectory) $(OutputFile)
 
 $(OutputFile): $(Objects)
 	@$(MakeDirCommand) $(@D)
-	$(ArchiveTool) $(ArchiveOutputSwitch)$(OutputFile) $(Objects)
+	@echo "" > $(IntermediateDirectory)/.d
+	$(AR) $(ArchiveOutputSwitch)$(OutputFile) @$(ObjectsFileList) $(ArLibs)
+	@$(MakeDirCommand) "/home/mark/t1b1ws/.build-debug"
+	@echo rebuilt > "/home/mark/t1b1ws/.build-debug/sqlwrapper"
+
+PostBuild:
 	@echo Executing Post Build commands ...
 	ar -cvq ./Debug/libsqlwrapper.a ./Debug/t1b1dataprocessor_databaseconnector.o
 	@echo Done
@@ -78,5 +98,6 @@ PreBuild:
 ##
 clean:
 	$(RM) $(OutputFile)
+	$(RM) "../.build-debug/sqlwrapper"
 
 

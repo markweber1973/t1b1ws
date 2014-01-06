@@ -19,6 +19,17 @@ TEST(PrimitiveScoreTest, SmallerThan)
 	EXPECT_TRUE((*fourScore)  < (*oneScore));          
 }
 
+TEST(PrimitiveScoreTest, Equality) 
+{
+  boost::scoped_ptr<PrimitiveScore> oneScore(new PrimitiveScore(true, 1, "B"));
+  boost::scoped_ptr<PrimitiveScore> twoScore(new PrimitiveScore(true, 1, "B"));
+  boost::scoped_ptr<PrimitiveScore> threeScore(new PrimitiveScore(false, 0, "B"));
+  boost::scoped_ptr<PrimitiveScore> fourScore(new PrimitiveScore(false, 0, "B"));
+  
+  EXPECT_TRUE((*oneScore)  == (*twoScore));
+  EXPECT_TRUE((*threeScore)  == (*fourScore));
+}
+
 TEST(PrimitiveScoreTest, InvalidConstruction) 
 {
   ASSERT_THROW(boost::scoped_ptr<PrimitiveScore> fiveScore(new PrimitiveScore(false, 10, "B")), std::exception);  

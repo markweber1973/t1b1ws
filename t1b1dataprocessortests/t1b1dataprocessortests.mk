@@ -5,18 +5,17 @@
 ## Debug
 ProjectName            :=t1b1dataprocessortests
 ConfigurationName      :=Debug
+WorkspacePath          := "/home/mark/t1b1ws"
+ProjectPath            := "/home/mark/t1b1ws/t1b1dataprocessortests"
 IntermediateDirectory  :=./Debug
 OutDir                 := $(IntermediateDirectory)
-WorkspacePath          := "/home/mark/t1b1workspace"
-ProjectPath            := "/home/mark/t1b1workspace/t1b1dataprocessortests"
 CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Mark
-Date                   :=12/01/2013
+Date                   :=01/06/14
 CodeLitePath           :="/home/mark/.codelite"
 LinkerName             :=g++
-ArchiveTool            :=ar rcus
 SharedObjectLinkerName :=g++ -shared -fPIC
 ObjectSuffix           :=.o
 DependSuffix           :=.o.d
@@ -28,38 +27,58 @@ OutputSwitch           :=-o
 LibraryPathSwitch      :=-L
 PreprocessorSwitch     :=-D
 SourceSwitch           :=-c 
-CompilerName           :=g++
-C_CompilerName         :=gcc
 OutputFile             :=$(IntermediateDirectory)/$(ProjectName)
 Preprocessors          :=
 ObjectSwitch           :=-o 
 ArchiveOutputSwitch    := 
 PreprocessOnlySwitch   :=-E 
+ObjectsFileList        :="t1b1dataprocessortests.txt"
+PCHCompileFlags        :=
 MakeDirCommand         :=mkdir -p
-CmpOptions             := -g  -std=c++0x $(Preprocessors)
 LinkOptions            :=  -lgtest -lpthread
-IncludePath            :=  "$(IncludeSwitch)." "$(IncludeSwitch)." "$(IncludeSwitch)../t1b1dataprocessor" 
-RcIncludePath          :=
-Libs                   :=
-LibPath                := "$(LibraryPathSwitch)." 
+IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)../t1b1dataprocessor 
+IncludePCH             := 
+RcIncludePath          := 
+Libs                   := 
+ArLibs                 :=  
+LibPath                := $(LibraryPathSwitch). 
+
+##
+## Common variables
+## AR, CXX, CC, AS, CXXFLAGS and CFLAGS can be overriden using an environment variables
+##
+AR       := ar rcus
+CXX      := g++
+CC       := gcc
+CXXFLAGS :=  -g  -std=c++0x $(Preprocessors)
+CFLAGS   :=  -g  -std=c++0x $(Preprocessors)
+ASFLAGS  := 
+AS       := as
 
 
 ##
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects=$(IntermediateDirectory)/maintests$(ObjectSuffix) $(IntermediateDirectory)/primitivescoretest$(ObjectSuffix) $(IntermediateDirectory)/boulderscoretest$(ObjectSuffix) $(IntermediateDirectory)/primitivetotalscoretest$(ObjectSuffix) $(IntermediateDirectory)/totalscoretest$(ObjectSuffix) $(IntermediateDirectory)/scorecardtest$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/maintests$(ObjectSuffix) $(IntermediateDirectory)/primitivescoretest$(ObjectSuffix) $(IntermediateDirectory)/boulderscoretest$(ObjectSuffix) $(IntermediateDirectory)/primitivetotalscoretest$(ObjectSuffix) $(IntermediateDirectory)/totalscoretest$(ObjectSuffix) $(IntermediateDirectory)/scorecardtest$(ObjectSuffix) $(IntermediateDirectory)/roundtest$(ObjectSuffix) 
+
+
+
+Objects=$(Objects0) 
 
 ##
 ## Main Build Targets 
 ##
+.PHONY: all clean PreBuild PrePreBuild PostBuild
 all: $(OutputFile)
 
-$(OutputFile): makeDirStep $(Objects)
+$(OutputFile): $(IntermediateDirectory)/.d $(Objects) 
 	@$(MakeDirCommand) $(@D)
-	$(LinkerName) $(OutputSwitch)$(OutputFile) $(Objects) $(LibPath) $(Libs) $(LinkOptions)
+	@echo "" > $(IntermediateDirectory)/.d
+	@echo $(Objects0)  > $(ObjectsFileList)
+	$(LinkerName) $(OutputSwitch)$(OutputFile) @$(ObjectsFileList) $(LibPath) $(Libs) $(LinkOptions)
 
-makeDirStep:
+$(IntermediateDirectory)/.d:
 	@test -d ./Debug || $(MakeDirCommand) ./Debug
 
 PreBuild:
@@ -69,52 +88,60 @@ PreBuild:
 ## Objects
 ##
 $(IntermediateDirectory)/maintests$(ObjectSuffix): maintests.cpp $(IntermediateDirectory)/maintests$(DependSuffix)
-	$(CompilerName) $(SourceSwitch) "/home/mark/t1b1workspace/t1b1dataprocessortests/maintests.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/maintests$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/mark/t1b1ws/t1b1dataprocessortests/maintests.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/maintests$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/maintests$(DependSuffix): maintests.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/maintests$(ObjectSuffix) -MF$(IntermediateDirectory)/maintests$(DependSuffix) -MM "/home/mark/t1b1workspace/t1b1dataprocessortests/maintests.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/maintests$(ObjectSuffix) -MF$(IntermediateDirectory)/maintests$(DependSuffix) -MM "maintests.cpp"
 
 $(IntermediateDirectory)/maintests$(PreprocessSuffix): maintests.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/maintests$(PreprocessSuffix) "/home/mark/t1b1workspace/t1b1dataprocessortests/maintests.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/maintests$(PreprocessSuffix) "maintests.cpp"
 
 $(IntermediateDirectory)/primitivescoretest$(ObjectSuffix): primitivescoretest.cpp $(IntermediateDirectory)/primitivescoretest$(DependSuffix)
-	$(CompilerName) $(SourceSwitch) "/home/mark/t1b1workspace/t1b1dataprocessortests/primitivescoretest.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/primitivescoretest$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/mark/t1b1ws/t1b1dataprocessortests/primitivescoretest.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/primitivescoretest$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/primitivescoretest$(DependSuffix): primitivescoretest.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/primitivescoretest$(ObjectSuffix) -MF$(IntermediateDirectory)/primitivescoretest$(DependSuffix) -MM "/home/mark/t1b1workspace/t1b1dataprocessortests/primitivescoretest.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/primitivescoretest$(ObjectSuffix) -MF$(IntermediateDirectory)/primitivescoretest$(DependSuffix) -MM "primitivescoretest.cpp"
 
 $(IntermediateDirectory)/primitivescoretest$(PreprocessSuffix): primitivescoretest.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/primitivescoretest$(PreprocessSuffix) "/home/mark/t1b1workspace/t1b1dataprocessortests/primitivescoretest.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/primitivescoretest$(PreprocessSuffix) "primitivescoretest.cpp"
 
 $(IntermediateDirectory)/boulderscoretest$(ObjectSuffix): boulderscoretest.cpp $(IntermediateDirectory)/boulderscoretest$(DependSuffix)
-	$(CompilerName) $(SourceSwitch) "/home/mark/t1b1workspace/t1b1dataprocessortests/boulderscoretest.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/boulderscoretest$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/mark/t1b1ws/t1b1dataprocessortests/boulderscoretest.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/boulderscoretest$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/boulderscoretest$(DependSuffix): boulderscoretest.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/boulderscoretest$(ObjectSuffix) -MF$(IntermediateDirectory)/boulderscoretest$(DependSuffix) -MM "/home/mark/t1b1workspace/t1b1dataprocessortests/boulderscoretest.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/boulderscoretest$(ObjectSuffix) -MF$(IntermediateDirectory)/boulderscoretest$(DependSuffix) -MM "boulderscoretest.cpp"
 
 $(IntermediateDirectory)/boulderscoretest$(PreprocessSuffix): boulderscoretest.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/boulderscoretest$(PreprocessSuffix) "/home/mark/t1b1workspace/t1b1dataprocessortests/boulderscoretest.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/boulderscoretest$(PreprocessSuffix) "boulderscoretest.cpp"
 
 $(IntermediateDirectory)/primitivetotalscoretest$(ObjectSuffix): primitivetotalscoretest.cpp $(IntermediateDirectory)/primitivetotalscoretest$(DependSuffix)
-	$(CompilerName) $(SourceSwitch) "/home/mark/t1b1workspace/t1b1dataprocessortests/primitivetotalscoretest.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/primitivetotalscoretest$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/mark/t1b1ws/t1b1dataprocessortests/primitivetotalscoretest.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/primitivetotalscoretest$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/primitivetotalscoretest$(DependSuffix): primitivetotalscoretest.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/primitivetotalscoretest$(ObjectSuffix) -MF$(IntermediateDirectory)/primitivetotalscoretest$(DependSuffix) -MM "/home/mark/t1b1workspace/t1b1dataprocessortests/primitivetotalscoretest.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/primitivetotalscoretest$(ObjectSuffix) -MF$(IntermediateDirectory)/primitivetotalscoretest$(DependSuffix) -MM "primitivetotalscoretest.cpp"
 
 $(IntermediateDirectory)/primitivetotalscoretest$(PreprocessSuffix): primitivetotalscoretest.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/primitivetotalscoretest$(PreprocessSuffix) "/home/mark/t1b1workspace/t1b1dataprocessortests/primitivetotalscoretest.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/primitivetotalscoretest$(PreprocessSuffix) "primitivetotalscoretest.cpp"
 
 $(IntermediateDirectory)/totalscoretest$(ObjectSuffix): totalscoretest.cpp $(IntermediateDirectory)/totalscoretest$(DependSuffix)
-	$(CompilerName) $(SourceSwitch) "/home/mark/t1b1workspace/t1b1dataprocessortests/totalscoretest.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/totalscoretest$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/mark/t1b1ws/t1b1dataprocessortests/totalscoretest.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/totalscoretest$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/totalscoretest$(DependSuffix): totalscoretest.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/totalscoretest$(ObjectSuffix) -MF$(IntermediateDirectory)/totalscoretest$(DependSuffix) -MM "/home/mark/t1b1workspace/t1b1dataprocessortests/totalscoretest.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/totalscoretest$(ObjectSuffix) -MF$(IntermediateDirectory)/totalscoretest$(DependSuffix) -MM "totalscoretest.cpp"
 
 $(IntermediateDirectory)/totalscoretest$(PreprocessSuffix): totalscoretest.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/totalscoretest$(PreprocessSuffix) "/home/mark/t1b1workspace/t1b1dataprocessortests/totalscoretest.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/totalscoretest$(PreprocessSuffix) "totalscoretest.cpp"
 
 $(IntermediateDirectory)/scorecardtest$(ObjectSuffix): scorecardtest.cpp $(IntermediateDirectory)/scorecardtest$(DependSuffix)
-	$(CompilerName) $(SourceSwitch) "/home/mark/t1b1workspace/t1b1dataprocessortests/scorecardtest.cpp" $(CmpOptions) $(ObjectSwitch)$(IntermediateDirectory)/scorecardtest$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/mark/t1b1ws/t1b1dataprocessortests/scorecardtest.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/scorecardtest$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/scorecardtest$(DependSuffix): scorecardtest.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) -MT$(IntermediateDirectory)/scorecardtest$(ObjectSuffix) -MF$(IntermediateDirectory)/scorecardtest$(DependSuffix) -MM "/home/mark/t1b1workspace/t1b1dataprocessortests/scorecardtest.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/scorecardtest$(ObjectSuffix) -MF$(IntermediateDirectory)/scorecardtest$(DependSuffix) -MM "scorecardtest.cpp"
 
 $(IntermediateDirectory)/scorecardtest$(PreprocessSuffix): scorecardtest.cpp
-	@$(CompilerName) $(CmpOptions) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/scorecardtest$(PreprocessSuffix) "/home/mark/t1b1workspace/t1b1dataprocessortests/scorecardtest.cpp"
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/scorecardtest$(PreprocessSuffix) "scorecardtest.cpp"
+
+$(IntermediateDirectory)/roundtest$(ObjectSuffix): roundtest.cpp $(IntermediateDirectory)/roundtest$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/mark/t1b1ws/t1b1dataprocessortests/roundtest.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/roundtest$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/roundtest$(DependSuffix): roundtest.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/roundtest$(ObjectSuffix) -MF$(IntermediateDirectory)/roundtest$(DependSuffix) -MM "roundtest.cpp"
+
+$(IntermediateDirectory)/roundtest$(PreprocessSuffix): roundtest.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/roundtest$(PreprocessSuffix) "roundtest.cpp"
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)
@@ -140,6 +167,10 @@ clean:
 	$(RM) $(IntermediateDirectory)/scorecardtest$(ObjectSuffix)
 	$(RM) $(IntermediateDirectory)/scorecardtest$(DependSuffix)
 	$(RM) $(IntermediateDirectory)/scorecardtest$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/roundtest$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/roundtest$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/roundtest$(PreprocessSuffix)
 	$(RM) $(OutputFile)
+	$(RM) "../.build-debug/t1b1dataprocessortests"
 
 

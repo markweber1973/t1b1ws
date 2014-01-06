@@ -5,6 +5,18 @@
 using namespace t1b1dataprocessor;
 
 
+TEST(TotalScoreTest, ValidateBonus) 
+{
+  unsigned int tops = 0;
+  unsigned int topAttempts = 0;
+  unsigned int bonusses = 0;
+  unsigned int bonusAttempts = 0;
+  
+  boost::scoped_ptr<TotalScore> lowScore(new TotalScore(0,0,0,0));
+  boost::scoped_ptr<TotalScore> highScore(new TotalScore(0,0,1,1));
+  EXPECT_TRUE((*lowScore)<(*highScore));
+}
+
 TEST(TotalScoreTest, ValidAllConstructions) 
 {
   unsigned int tops = 0;

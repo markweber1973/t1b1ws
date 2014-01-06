@@ -5,6 +5,28 @@
 using namespace t1b1dataprocessor;
 
 
+TEST(PrimitiveTotalScoreTest, Equal) 
+{
+  boost::scoped_ptr<PrimitiveTotalScore> oneScore(new PrimitiveTotalScore(1, 1, "B"));
+  boost::scoped_ptr<PrimitiveTotalScore> twoScore(new PrimitiveTotalScore(1, 1, "B"));
+  boost::scoped_ptr<PrimitiveTotalScore> threeScore(new PrimitiveTotalScore(0, 0, "B"));
+  boost::scoped_ptr<PrimitiveTotalScore> fourScore(new PrimitiveTotalScore(0, 0, "B"));
+  
+  EXPECT_TRUE((*oneScore)   == (*twoScore));
+  EXPECT_TRUE((*threeScore) == (*fourScore));
+}
+
+TEST(PrimitiveTotalScoreTest, Unequality) 
+{
+  boost::scoped_ptr<PrimitiveTotalScore> oneScore(new PrimitiveTotalScore(1, 1, "B"));
+  boost::scoped_ptr<PrimitiveTotalScore> twoScore(new PrimitiveTotalScore(1, 1, "B"));
+  boost::scoped_ptr<PrimitiveTotalScore> threeScore(new PrimitiveTotalScore(0, 0, "B"));
+  boost::scoped_ptr<PrimitiveTotalScore> fourScore(new PrimitiveTotalScore(0, 0, "B"));
+  
+  EXPECT_FALSE((*oneScore)  != (*twoScore));
+  EXPECT_TRUE((*threeScore)  != (*twoScore));
+}
+
 TEST(PrimitiveTotalScoreTest, SmallerThan) 
 {
   boost::scoped_ptr<PrimitiveTotalScore> oneScore(new PrimitiveTotalScore(1, 1, "B"));

@@ -49,6 +49,14 @@ void Round::printOn(std::ostream& strm) const
 {
 	strm << "<round>" << std::endl;
 	strm << "<name>"   << m_name.c_str()   << "</name>"   << std::endl;
+
+  for (unsigned int x = 1; x <= m_nrOfBoulders; x++)
+  {
+    strm << "<boulder>" << std::endl;    
+    strm << "<number>" << x << "</number>" << std::endl;    
+    strm << "</boulder>" << std::endl;        
+  }
+
 	strm << "<scorecards>" << std::endl;  
   BOOST_FOREACH(boost::shared_ptr<ScoreCard> localcard, m_scorecards)
   {

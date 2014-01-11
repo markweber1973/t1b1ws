@@ -105,7 +105,7 @@ unsigned int DetermineNrOfBoulders(std::string roundId)
   std::ostringstream oss;  
   std::string tmp;
   
-  oss<<"SELECT * FROM rounds R WHERE (R.`roundId`='"<<roundId<<"')"; 
+  oss<<"SELECT * FROM rounds R WHERE (R.`ro)undId`='"<<roundId<<"')"; 
 
   sql::ResultSet *resultSet;
   resultSet = dbconnector->executeQuery(oss.str());
@@ -138,7 +138,7 @@ void DetermineActiveRounds()
     try 
     {
       iRoundId = boost::lexical_cast<unsigned int>(roundId);
-      unsigned int nrOfBoulders = DetermineNrOfBoulders(roundId);
+      unsigned int nrOfBoulders = GetUnsignedIntFromResultSet(resultSet,"nrofboulders");
       boost::shared_ptr<Round> localRound (new Round(roundName, nrOfBoulders));
       roundMap[iRoundId] = localRound;
     } 
@@ -176,7 +176,6 @@ int main(int argc, char **argv) {
   myfile << "<scoredata>" << std::endl;
 
 
-  Round currentRound("Iedereen", 5);
   DetermineActiveRounds(); 
  
   while (res->next()) 
@@ -202,8 +201,13 @@ int main(int argc, char **argv) {
     }
     
     boost::shared_ptr<EnrolledClimber> enrolledClimber(new EnrolledClimber(res->getInt("startnumber"), localClimber));    
-
-    boost::shared_ptr<ScoreCard> localScoreCard( new ScoreCard(enrolledClimber, 5, polePosition));
+    
+    
+//    (*roundMap[iRoundId])
+//    boost::shared_ptr<Round> effeRound = ;
+//    effeRound->GetNrOfBoulders();
+    
+    boost::shared_ptr<ScoreCard> localScoreCard( new ScoreCard(enrolledClimber, roundMap[iRoundId]->GetNrOfBoulders(), polePosition));
 
     sql::ResultSet* scoreResultSet;
     std::ostringstream oss;  

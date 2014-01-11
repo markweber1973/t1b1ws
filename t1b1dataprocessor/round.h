@@ -16,7 +16,7 @@ public:
   
   friend std::ostream& operator<<(std::ostream& os, const Round& aRound);
   void printOn(std::ostream&) const;
-  
+  unsigned int GetNrOfBoulders() {return m_nrOfBoulders;};
 private:
   std::string m_name;
   unsigned int m_nrOfBoulders;

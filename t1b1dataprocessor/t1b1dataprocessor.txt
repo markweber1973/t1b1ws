@@ -1,1 +1,0 @@
-./Debug/main.o ./Debug/climber.o ./Debug/databaseconnector.o ./Debug/scorecard.o ./Debug/enrolledclimber.o ./Debug/boulderscore.o ./Debug/primitivescore.o ./Debug/totalscore.o ./Debug/primitivetotalscore.o ./Debug/round.o

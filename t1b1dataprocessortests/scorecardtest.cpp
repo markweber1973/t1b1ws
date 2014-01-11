@@ -60,7 +60,7 @@ TEST(ScoreCardTest, PolePosition)
   boost::scoped_ptr<ScoreCard> oneScoreCard(new ScoreCard(oneEnrolledClimber, 2, 1));
   EXPECT_TRUE(oneScoreCard->IsEmpty());
 
-  boost::shared_ptr<BoulderScore> oneBoulderScore(new BoulderScore(1, false));
+  boost::shared_ptr<BoulderScore> oneBoulderScore(new BoulderScore(1, true));
   oneBoulderScore->BonusHit(1);
   oneBoulderScore->TopHit(1);
   oneScoreCard->AddScore(oneBoulderScore);

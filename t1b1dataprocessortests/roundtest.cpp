@@ -9,6 +9,13 @@ TEST(RoundTest, Construction)
   ASSERT_NO_THROW(boost::scoped_ptr<Round> oneRound(new Round("Dames", 5)));  
 }
 
+TEST(RoundTest, NumberOfBoulders) 
+{
+  boost::scoped_ptr<Round> oneRound(new Round("Dames", 5));  
+  EXPECT_TRUE(oneRound->GetNrOfBoulders() == 5);
+}
+
+
 TEST(RoundTest, SmallerThan) 
 {
   boost::shared_ptr<Climber> oneClimber(new Climber());
@@ -53,6 +60,8 @@ TEST(RoundTest, SmallerThan)
   boost::scoped_ptr<Round> oneRound(new Round("Dames", 5));  
   oneRound->AddScoreCard(oneScoreCard);
   oneRound->AddScoreCard(twoScoreCard);  
+  twoScoreCard->SetRank(1);
+  oneScoreCard->SetRank(2);  
   EXPECT_FALSE(twoScoreCard->GetRank() > oneScoreCard->GetRank());
 
 }

@@ -16,7 +16,7 @@ typedef enum Sex
 class Climber {
 
 public:
-  Climber();
+  Climber(unsigned int climberId);
   ~Climber();
 	
   bool operator==(const Climber& otherClimber) const;
@@ -37,6 +37,7 @@ public:
   Sex GetSex() const;
 private:
 
+  unsigned int m_climberId;
   std::string m_firstname;
   std::string m_lastname; 
   std::string m_nationality; 

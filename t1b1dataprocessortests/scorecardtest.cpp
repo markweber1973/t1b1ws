@@ -8,7 +8,7 @@ using namespace t1b1dataprocessor;
 
 TEST(ScoreCardTest, SmallerThan) 
 {
-  boost::shared_ptr<Climber> oneClimber(new Climber());
+  boost::shared_ptr<Climber> oneClimber(new Climber(1));
   oneClimber->SetFirstname("Mark");
   oneClimber->SetLastname("Weber");
   oneClimber->SetSex(male);
@@ -27,7 +27,7 @@ TEST(ScoreCardTest, SmallerThan)
   oneScoreCard->AddScore(twoBoulderScore);
   
  
-  boost::shared_ptr<Climber> twoClimber(new Climber());
+  boost::shared_ptr<Climber> twoClimber(new Climber(2));
   twoClimber->SetFirstname("Piet");
   twoClimber->SetLastname("Snot");
   twoClimber->SetSex(male);
@@ -51,7 +51,7 @@ TEST(ScoreCardTest, SmallerThan)
 
 TEST(ScoreCardTest, PolePosition) 
 {
-  boost::shared_ptr<Climber> oneClimber(new Climber());
+  boost::shared_ptr<Climber> oneClimber(new Climber(4));
   oneClimber->SetFirstname("Mark");
   oneClimber->SetLastname("Weber");
   oneClimber->SetSex(male);
@@ -70,9 +70,9 @@ TEST(ScoreCardTest, PolePosition)
   twoBoulderScore->BonusHit(1);
   twoBoulderScore->TopHit(1);
   oneScoreCard->AddScore(twoBoulderScore);
-  
+  EXPECT_FALSE(oneScoreCard->IsFinished());
  
-  boost::shared_ptr<Climber> twoClimber(new Climber());
+  boost::shared_ptr<Climber> twoClimber(new Climber(5));
   twoClimber->SetFirstname("Piet");
   twoClimber->SetLastname("Snot");
   twoClimber->SetSex(male);
@@ -80,16 +80,16 @@ TEST(ScoreCardTest, PolePosition)
   boost::shared_ptr<EnrolledClimber> twoEnrolledClimber(new EnrolledClimber(10, twoClimber));
   boost::scoped_ptr<ScoreCard> twoScoreCard(new ScoreCard(twoEnrolledClimber, 2, 2));
   
-  boost::shared_ptr<BoulderScore> threeBoulderScore(new BoulderScore(1, false));
+  boost::shared_ptr<BoulderScore> threeBoulderScore(new BoulderScore(1, true));
   threeBoulderScore->BonusHit(1);
   threeBoulderScore->TopHit(1);
   twoScoreCard->AddScore(threeBoulderScore);
 
-  boost::shared_ptr<BoulderScore> fourBoulderScore(new BoulderScore(2, false));
+  boost::shared_ptr<BoulderScore> fourBoulderScore(new BoulderScore(2, true));
   fourBoulderScore->BonusHit(1);
   fourBoulderScore->TopHit(1);
   twoScoreCard->AddScore(fourBoulderScore);
-
+  EXPECT_TRUE(twoScoreCard->IsFinished());
   EXPECT_TRUE(*twoScoreCard < *oneScoreCard);
 }
 

@@ -29,9 +29,11 @@ public:
   void printOn(std::ostream&) const;
   
   void AddScore(boost::shared_ptr<BoulderScore> score);
-  bool IsEmpty();
+  bool IsEmpty() const;
+  bool IsFinished() const;  
   void SetRank(unsigned int rank);
   unsigned int GetRank();  
+  unsigned int GetStartNumber();
   boost::shared_ptr<TotalScore> GetTotalScore() const;
 
 private:

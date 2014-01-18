@@ -15,6 +15,7 @@
     <File Name="totalscoretest.cpp"/>
     <File Name="scorecardtest.cpp"/>
     <File Name="roundtest.cpp"/>
+    <File Name="phasetest.cpp"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">

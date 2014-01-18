@@ -6,7 +6,7 @@
 namespace t1b1dataprocessor
 {
 
-Climber::Climber()
+Climber::Climber(unsigned int climberId): m_climberId(climberId)
 {
 	m_firstname = "noinit";
 	m_lastname  = "noinit";

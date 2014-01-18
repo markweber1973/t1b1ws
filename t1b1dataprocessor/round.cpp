@@ -7,7 +7,8 @@ namespace t1b1dataprocessor
 {
 	
 
-Round::Round(std::string name, unsigned int nrOfBoulders): m_nrOfBoulders(nrOfBoulders), m_name(name)
+Round::Round(std::string name, unsigned int sequence, unsigned int nrOfBoulders, unsigned int roundId): 
+  m_name(name), m_sequence(sequence), m_nrOfBoulders(nrOfBoulders), m_roundId(roundId)
 {
 }
 
@@ -15,27 +16,47 @@ Round::~Round()
 {
 }
 
+unsigned int Round::GetRoundId() const
+{
+  return m_roundId;  
+}
+
 void Round::AddScoreCard(boost::shared_ptr<ScoreCard> scorecard)
 {  
-  m_scorecards.push_back(scorecard); 
-  std::sort(boost::make_indirect_iterator(m_scorecards.begin()), 
-            boost::make_indirect_iterator(m_scorecards.end()), 
+  m_scoreCardMap[scorecard->GetStartNumber()] = scorecard; 
+}
+
+void Round::AddBoulderScore(unsigned int startNumber, boost::shared_ptr<BoulderScore> theScore)
+{
+  m_scoreCardMap[startNumber]->AddScore(theScore);
+}
+
+void Round::PrintScoreCards(std::ostream& strm) const
+{
+  std::vector<boost::shared_ptr<ScoreCard> > localVector;
+  for (auto& x: m_scoreCardMap) 
+  {
+    localVector.push_back(x.second);
+  }
+
+  std::sort(boost::make_indirect_iterator(localVector.begin()), 
+            boost::make_indirect_iterator(localVector.end()), 
             std::greater<ScoreCard>());
   
   unsigned int rank = 1;
-  std::vector<boost::shared_ptr<ScoreCard> >::iterator scoreCardIt = m_scorecards.begin();
+  std::vector<boost::shared_ptr<ScoreCard> >::iterator scoreCardIt = localVector.begin();
 
-  unsigned int vectorSize = m_scorecards.size();
+  unsigned int vectorSize = localVector.size();
 
   for (unsigned int x = 0; x < vectorSize; x++)
   {
-    m_scorecards.at(x)->SetRank(rank);
+    localVector.at(x)->SetRank(rank);
     if (x+1 < vectorSize)
     {
-      if (!m_scorecards.at(x)->IsEmpty() && !m_scorecards.at(x+1)->IsEmpty())
+      if (!localVector.at(x)->IsEmpty() && !localVector.at(x+1)->IsEmpty())
       {
-        boost::shared_ptr<TotalScore> oneScore = m_scorecards.at(x)->GetTotalScore();
-        boost::shared_ptr<TotalScore> twoScore = m_scorecards.at(x+1)->GetTotalScore();          
+        boost::shared_ptr<TotalScore> oneScore = localVector.at(x)->GetTotalScore();
+        boost::shared_ptr<TotalScore> twoScore = localVector.at(x+1)->GetTotalScore();          
         if ( (*oneScore) > (*twoScore))
         {
           rank++;
@@ -43,13 +64,25 @@ void Round::AddScoreCard(boost::shared_ptr<ScoreCard> scorecard)
       }
     }
   }  
+  
+  BOOST_FOREACH(boost::shared_ptr<ScoreCard> localcard, localVector)
+  {
+    strm << *localcard;
+  }  
 }
 
 void Round::printOn(std::ostream& strm) const
 {
 	strm << "<round>" << std::endl;
 	strm << "<name>"   << m_name.c_str()   << "</name>"   << std::endl;
-
+  if (IsFinished())
+  {
+	  strm << "<roundfinished>Round finished</roundfinished>" << std::endl;
+  }
+  else
+  {
+	  strm << "<roundfinished>Round not finished</roundfinished>" << std::endl;
+  }
   for (unsigned int x = 1; x <= m_nrOfBoulders; x++)
   {
     strm << "<boulder>" << std::endl;    
@@ -58,18 +91,33 @@ void Round::printOn(std::ostream& strm) const
   }
 
 	strm << "<scorecards>" << std::endl;  
-  BOOST_FOREACH(boost::shared_ptr<ScoreCard> localcard, m_scorecards)
-  {
-    strm << *localcard;
-  }
+  PrintScoreCards(strm);
+
 	strm << "</scorecards>" << std::endl;    
 	strm << "</round>" << std::endl;	
+}
+
+bool Round::operator<(const Round& otherRound) const
+{
+  return m_sequence < otherRound.m_sequence;
 }
 
 std::ostream& operator<<(std::ostream& os, const Round& aRound)
 {
   aRound.printOn(os);
   return os;
+}
+
+bool Round::IsFinished() const
+{
+  for (auto& x: m_scoreCardMap) 
+  {
+    if (!x.second->IsFinished())
+    {
+      return false;
+    }
+  }   
+  return true;  
 }
 
 }

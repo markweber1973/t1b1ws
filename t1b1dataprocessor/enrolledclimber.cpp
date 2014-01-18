@@ -13,6 +13,11 @@ EnrolledClimber::~EnrolledClimber()
 {
 }
 
+unsigned int EnrolledClimber::GetStartNumber() const
+{
+  return m_startnumber;
+}
+
 void EnrolledClimber::printOn(std::ostream& strm) const
 {
 	strm << "<enrolledclimber>" << std::endl;

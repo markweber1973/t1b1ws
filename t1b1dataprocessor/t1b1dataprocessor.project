@@ -27,6 +27,10 @@
     <File Name="primitivetotalscore.cpp"/>
     <File Name="round.h"/>
     <File Name="round.cpp"/>
+    <File Name="phase.h"/>
+    <File Name="phase.cpp"/>
+    <File Name="event.h"/>
+    <File Name="event.cpp"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

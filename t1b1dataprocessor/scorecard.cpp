@@ -49,9 +49,21 @@ void ScoreCard::AddScore(boost::shared_ptr<BoulderScore> score)
   m_boulderScoreMap[score->GetBoulderId()] = score;
 }
 
-bool ScoreCard::IsEmpty()
+bool ScoreCard::IsEmpty() const
 {
   return m_isEmpty;
+}
+
+bool ScoreCard::IsFinished() const
+{
+  BOOST_FOREACH(BoulderScorePair localscore, m_boulderScoreMap)
+  {
+    if (!localscore.second->IsFinished())
+    {
+      return false;
+    }
+  }  
+  return true;
 }
 
 void ScoreCard::SetRank(unsigned int rank)
@@ -63,6 +75,12 @@ unsigned int ScoreCard::GetRank()
 {
   return(m_rank);
 }
+
+unsigned int ScoreCard::GetStartNumber()
+{
+  return m_climber->GetStartNumber();
+}
+
 
 bool ScoreCard::operator==(const ScoreCard& otherScoreCard) const
 {

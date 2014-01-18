@@ -15,6 +15,7 @@ public:
   
   friend std::ostream& operator<<(std::ostream& os, const EnrolledClimber& aClimber);
   void printOn(std::ostream&) const;
+  unsigned int GetStartNumber() const;
   
 private:
   boost::shared_ptr<Climber> m_climber;

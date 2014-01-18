@@ -1,0 +1,1 @@
+./Debug/maintests.o ./Debug/primitivescoretest.o ./Debug/boulderscoretest.o ./Debug/primitivetotalscoretest.o ./Debug/totalscoretest.o ./Debug/scorecardtest.o ./Debug/roundtest.o ./Debug/phasetest.o

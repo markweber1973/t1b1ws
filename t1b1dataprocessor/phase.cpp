@@ -1,5 +1,6 @@
 #include "phase.h"
 #include <boost/foreach.hpp>
+#include <boost/iterator/indirect_iterator.hpp>
 
 namespace t1b1dataprocessor
 {
@@ -13,6 +14,7 @@ Phase::~Phase()
 }
 
 void Phase::AddRound(boost::shared_ptr<Round> round)
+
 {
   m_roundMap[round->GetRoundId()] = round;
 }
@@ -32,7 +34,11 @@ void Phase::printOn(std::ostream& strm) const
   {
     localRoundsVector.push_back(x.second);
   }
-  std::sort(localRoundsVector.begin(), localRoundsVector.end());
+//  std::sort(localRoundsVector.begin(), localRoundsVector.end());
+  std::sort(boost::make_indirect_iterator(localRoundsVector.begin()), 
+            boost::make_indirect_iterator(localRoundsVector.end()), 
+            std::less<Round>());  
+
 
 	strm << "<rounds>" << std::endl;  
   BOOST_FOREACH(boost::shared_ptr<Round> localRound, localRoundsVector)

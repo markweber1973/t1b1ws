@@ -17,6 +17,7 @@ public:
   void printOn(std::ostream&) const; 
   void AddPhase(boost::shared_ptr<Phase> phase);
   void AddBoulderScore(unsigned int phaseId, unsigned int roundId, boost::shared_ptr<BoulderScore> theScore, unsigned int startNumber);
+  unsigned int GetEventId();
   
 private:
   unsigned int m_eventId;

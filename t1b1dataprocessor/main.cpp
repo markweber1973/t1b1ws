@@ -39,12 +39,20 @@ PhaseRoundMap phaseRoundMap;
 
 std::string GetWStringFromResultSet(sql::ResultSet* res, std::string fieldName)
 {
-	sql::SQLString sqlString;
-	sqlString = res->getString(fieldName);
-	
-	std::ostringstream stringStreamBuf;
-	stringStreamBuf << sqlString;
-	return (stringStreamBuf.str());	
+  try
+  {
+    sql::SQLString sqlString;
+    sqlString = res->getString(fieldName);
+    cout << fieldName<< std::endl;
+    std::ostringstream stringStreamBuf;
+    stringStreamBuf << sqlString;
+    return (stringStreamBuf.str());	    
+  }
+  catch (...)
+  {
+    int x = 0;
+  }
+
 }
 
 unsigned int GetUnsignedIntFromResultSet(sql::ResultSet* res, std::string fieldName)
@@ -177,25 +185,94 @@ std::string DetermineRoundId(std::string eventId, std::string phaseId, std::stri
   return (GetWStringFromResultSet(roundIdResultSet,"roundId"));
 }
 
-void CreateAllPhases(std::string eventId)
+void CreateAllPhasesInEvent(Event& event)
 {
   std::ostringstream oss;  
-  std::string tmp;
-  oss<<"SELECT * FROM eventphaseenrollment RE WHERE (RE.`eventId`='"<<eventId<<"')";
+  oss<<"SELECT * FROM eventphaseenrollment RE WHERE (RE.`eventId`='"<<event.GetEventId()<<"')";
 
-  sql::ResultSet *resultset;
-  resultset = dbconnector->executeQuery(oss.str());
+  sql::ResultSet *phasesResultset;
+  phasesResultset = dbconnector->executeQuery(oss.str());
 
-  while (resultset->next()) 
+  while (phasesResultset->next()) 
   {
-    std::string phaseId = GetWStringFromResultSet(resultset, "phaseId");
-    std::string phaseName = GetWStringFromResultSet(resultset, "phaseId");
-  //  boost::shared_ptr<Phase> localPhase(new Phase())
+    std::string phaseId = GetWStringFromResultSet(phasesResultset, "phaseId");
+    unsigned int sequence = GetUnsignedIntFromResultSet(phasesResultset, "sequence");    
+    std::string phaseName = DeterminePhaseName(phaseId);
+    cout << phaseName << std::endl;
+    int intPhaseId = GetUnsignedIntFromResultSet(phasesResultset, "phaseId");    
+    boost::shared_ptr<Phase> localPhase(new Phase(phaseName, sequence, intPhaseId));   
+    event.AddPhase(localPhase);
 
+    std::ostringstream oss2;
+    oss2<<"SELECT * FROM roundphaseenrollment RE WHERE (RE.`eventId`='"<<event.GetEventId()<<"' AND RE.`phaseId`='"<<phaseId<<"')";  
+    sql::ResultSet *roundResultset;
+    roundResultset = dbconnector->executeQuery(oss2.str());
+    while (roundResultset->next()) 
+    {
+      std::string roundId = GetWStringFromResultSet(roundResultset, "roundId");
+      std::string roundName = DetermineRoundName(roundId);
+      cout << roundName << std::endl;      
+      unsigned int sequence = GetUnsignedIntFromResultSet(roundResultset, "sequence");
+      unsigned int nrOfBoulders = GetUnsignedIntFromResultSet(roundResultset, "nrofboulders");
+      unsigned int intRoundId = GetUnsignedIntFromResultSet(roundResultset, "roundId");
+      boost::shared_ptr<Round> localRound( new Round(roundName, sequence, nrOfBoulders, intRoundId));
+      localPhase->AddRound(localRound);
 
-//  Phase(std::string name, unsigned int sequence, unsigned int phaseId);
-    
-  }  
+      std::ostringstream oss3;
+      oss3<<"SELECT RPE.roundId, R.name, EER.startNumber, C.climberId, C.lastname, C.firstname, C.nationality, RE.poleposition \
+             FROM roundphaseenrollment RPE JOIN rounds R ON \
+             (RPE.eventId='"<<event.GetEventId()<<"' AND RPE.phaseId='"<<phaseId<<"'AND RPE.roundId='"<<roundId<< "') \
+             JOIN roundenrollment RE ON RE.roundId='"<<roundId<< "'\
+             JOIN eventenrollment EER ON EER.startNumber=RE.startNumber \
+             JOIN climbers C on EER.climberId=C.climberId";
+      sql::ResultSet *scoreResultset;
+      scoreResultset = dbconnector->executeQuery(oss3.str());
+           
+      while (scoreResultset->next()) 
+      {
+        unsigned int climberId = GetUnsignedIntFromResultSet(scoreResultset, "climberId");    
+        boost::shared_ptr<Climber> localClimber( new Climber(climberId));
+        localClimber->SetFirstname(GetWStringFromResultSet(scoreResultset, "firstname"));
+        localClimber->SetLastname(GetWStringFromResultSet(scoreResultset, "lastname"));
+        localClimber->SetNationality(GetWStringFromResultSet(scoreResultset, "nationality"));
+        
+
+        std::string startNumber;
+        startNumber = GetWStringFromResultSet(scoreResultset, "startnumber");
+        unsigned int polePosition = 0;
+        
+        boost::shared_ptr<EnrolledClimber> enrolledClimber(new EnrolledClimber(scoreResultset->getInt("startnumber"), localClimber));    
+        boost::shared_ptr<ScoreCard> localScoreCard( new ScoreCard(enrolledClimber, localRound->GetNrOfBoulders(), polePosition));
+
+        sql::ResultSet* hitScoreResultSet;
+        std::ostringstream oss4;  
+        oss4 << "SELECT S.finished, S.topped, S.topAttempts, S.bonussed, S.bonusAttempts, S.boulderNumber ";
+        oss4 << "FROM scores S WHERE (S.eventId='"<<event.GetEventId()<<"' AND S.phaseId='"<<phaseId<<"' AND S.roundId='"<<roundId<<"' AND S.startNumber='"<<startNumber;
+        oss4 << "')";
+
+        std::string scoreQuery = oss4.str();
+        hitScoreResultSet = dbconnector->executeQuery(scoreQuery);      
+        while (hitScoreResultSet->next()) 
+        {
+          unsigned int boulderNumber = hitScoreResultSet->getInt("boulderNumber");
+
+          bool finished = hitScoreResultSet->getInt("finished") == 1;
+          boost::shared_ptr<BoulderScore> localScore (new BoulderScore( boulderNumber, finished));
+
+          unsigned int bonussed = hitScoreResultSet->getInt("bonussed");
+          unsigned int bonusAttempts = hitScoreResultSet->getInt("bonusAttempts");
+          if (bonussed) localScore->BonusHit(bonusAttempts);      
+          
+          unsigned int topped = hitScoreResultSet->getInt("topped");
+          unsigned int topAttempts = hitScoreResultSet->getInt("topAttempts");
+          if (topped) localScore->TopHit(topAttempts);
+          localScoreCard->AddScore(localScore);
+        }
+        localRound->AddScoreCard(localScoreCard);
+      }                 
+    }  
+  }
+  cout << event;
 }
 
 int main(int argc, char **argv) 
@@ -209,82 +286,14 @@ int main(int argc, char **argv)
   {
     
   }
-  
+
   Event localEvent("Boulder1", activeEventId);
-  sql::ResultSet *res;
-  res = dbconnector->executeQuery("SELECT RPE.roundId, R.name, EER.startNumber, C.climberId, C.lastname, C.firstname, C.nationality, RE.poleposition FROM roundphaseenrollment RPE JOIN rounds R ON (RPE.eventId='7' AND RPE.phaseId='3'AND RPE.roundId=R.roundId) JOIN roundenrollment RE ON RE.roundId=RPE.roundId JOIN eventenrollment EER ON EER.startNumber=RE.startNumber JOIN climbers C on EER.climberId=C.climberId");  
+  CreateAllPhasesInEvent(localEvent);
   
-  std::vector<Climber_ptr> climberList;
   ofstream myfile;
   myfile.open ("climbers.xml");
   myfile << "<scoredata>" << std::endl;
-
-  DetermineActiveRounds(); 
- 
-  while (res->next()) 
-  {
-    unsigned int climberId = GetUnsignedIntFromResultSet(res, "climberId");    
-    boost::shared_ptr<Climber> localClimber( new Climber(climberId));
-    localClimber->SetFirstname(GetWStringFromResultSet(res, "firstname"));
-    localClimber->SetLastname(GetWStringFromResultSet(res, "lastname"));
-    localClimber->SetNationality(GetWStringFromResultSet(res, "nationality"));
-    
-    std::string roundId;
-    std::string startNumber;
-    startNumber = GetWStringFromResultSet(res, "startnumber");
-    unsigned int polePosition = 0;
-    roundId = DetermineRoundId("7","3",startNumber, polePosition);   
-    unsigned int iRoundId = 0;
-    try 
-    {
-      iRoundId = boost::lexical_cast<unsigned int>(roundId);
-    } 
-    catch( boost::bad_lexical_cast const& )
-    {
-      std::cout << "Error: input string was not valid" << std::endl;
-    }
-    
-    boost::shared_ptr<EnrolledClimber> enrolledClimber(new EnrolledClimber(res->getInt("startnumber"), localClimber));    
-    boost::shared_ptr<ScoreCard> localScoreCard( new ScoreCard(enrolledClimber, roundMap[iRoundId]->GetNrOfBoulders(), polePosition));
-
-    sql::ResultSet* scoreResultSet;
-    std::ostringstream oss;  
-    oss << "SELECT S.finished, S.topped, S.topAttempts, S.bonussed, S.bonusAttempts, S.boulderNumber ";
-    oss << "FROM scores S WHERE (S.eventId='7' AND S.phaseId='3' AND S.roundId='"<<roundId<<"' AND S.startNumber='"<<startNumber;
-    oss << "')";
-
-    std::string scoreQuery = oss.str();
-    scoreResultSet = dbconnector->executeQuery(scoreQuery);      
-    while (scoreResultSet->next()) 
-    {
-      unsigned int boulderNumber = scoreResultSet->getInt("boulderNumber");
-
-      bool finished = scoreResultSet->getInt("finished") == 1;
-      boost::shared_ptr<BoulderScore> localScore (new BoulderScore( boulderNumber, finished));
-
-      unsigned int bonussed = scoreResultSet->getInt("bonussed");
-      unsigned int bonusAttempts = scoreResultSet->getInt("bonusAttempts");
-      if (bonussed) localScore->BonusHit(bonusAttempts);      
-      
-      unsigned int topped = scoreResultSet->getInt("topped");
-      unsigned int topAttempts = scoreResultSet->getInt("topAttempts");
-      if (topped) localScore->TopHit(topAttempts);
-      localScoreCard->AddScore(localScore);
-    }
-    boost::shared_ptr<Round> tmpRound = roundMap.at(iRoundId);
-    tmpRound->AddScoreCard(localScoreCard);
-  }
-  
-
-  boost::shared_ptr<Phase> localPhase (new Phase("Finale", 1, 1));
-  
-  BOOST_FOREACH(RoundPair roundPair, roundMap)
-  {
-    localPhase->AddRound(roundPair.second);
-  }
-  localEvent.AddPhase(localPhase);
   myfile << localEvent;
-  
 	myfile << "</scoredata>" << std::endl;
   myfile.close();
   

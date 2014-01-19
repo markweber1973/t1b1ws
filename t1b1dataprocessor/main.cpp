@@ -43,7 +43,7 @@ std::string GetWStringFromResultSet(sql::ResultSet* res, std::string fieldName)
   {
     sql::SQLString sqlString;
     sqlString = res->getString(fieldName);
-    cout << fieldName<< std::endl;
+ //   cout << fieldName<< std::endl;
     std::ostringstream stringStreamBuf;
     stringStreamBuf << sqlString;
     return (stringStreamBuf.str());	    
@@ -222,9 +222,12 @@ void CreateAllPhasesInEvent(Event& event)
       oss3<<"SELECT RPE.roundId, R.name, EER.startNumber, C.climberId, C.lastname, C.firstname, C.nationality, RE.poleposition \
              FROM roundphaseenrollment RPE JOIN rounds R ON \
              (RPE.eventId='"<<event.GetEventId()<<"' AND RPE.phaseId='"<<phaseId<<"'AND RPE.roundId='"<<roundId<< "') \
-             JOIN roundenrollment RE ON RE.roundId='"<<roundId<< "'\
+             JOIN roundenrollment RE ON (RE.roundId='"<<roundId<< "' AND RE.eventId='"<<event.GetEventId()<<"' AND RE.phaseId='"<<phaseId<<"')\
              JOIN eventenrollment EER ON EER.startNumber=RE.startNumber \
              JOIN climbers C on EER.climberId=C.climberId";
+
+             
+             
       sql::ResultSet *scoreResultset;
       scoreResultset = dbconnector->executeQuery(oss3.str());
            
@@ -272,7 +275,6 @@ void CreateAllPhasesInEvent(Event& event)
       }                 
     }  
   }
-  cout << event;
 }
 
 int main(int argc, char **argv) 

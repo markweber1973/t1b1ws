@@ -12,6 +12,11 @@ BoulderScore::BoulderScore(unsigned int boulderId, bool finished)
   m_boulderId = boulderId;
   m_topScore.reset(new PrimitiveScore(false, 0, "T"));
   m_bonusScore.reset(new PrimitiveScore(false, 0, "B"));   
+  if (finished)  
+  {
+    m_topScore->SetFinished();
+    m_bonusScore->SetFinished();    
+  }
 }
 
 BoulderScore::~BoulderScore()
@@ -28,12 +33,14 @@ void BoulderScore::TopHit(const unsigned int attempts)
   if (attempts == 0) throw invalid_argument("TopHit with 0 attempts is invalid");
   if (!m_bonusScore->IsHit()) throw logic_error("TopHit with no bonus hit is invalid");
   m_topScore.reset(new PrimitiveScore(true, attempts, "T")); 
+  m_topScore->SetFinished();
 }
 
 void BoulderScore::BonusHit(const unsigned int attempts)
 {
   if (attempts == 0) throw invalid_argument("BonusHit with 0 attempts is invalid"); 
   m_bonusScore.reset(new PrimitiveScore(true, attempts, "B")); 
+  m_bonusScore->SetFinished();
 }
   
 void BoulderScore::printOn(std::ostream& strm) const

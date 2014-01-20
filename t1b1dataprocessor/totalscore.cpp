@@ -47,7 +47,13 @@ bool TotalScore::operator<(const TotalScore& otherScore) const
 
 bool TotalScore::operator>(const TotalScore& otherScore) const
 {
-	return ((!(*m_topScore < *otherScore.m_topScore)) && (*m_topScore != *otherScore.m_topScore));
+	//return ((!(*this < otherScore)) && (*this != otherScore));
+  return (
+    (*m_topScore > *otherScore.m_topScore) || 
+    (
+     (*m_topScore == *otherScore.m_topScore) && 
+     (*m_bonusScore > *otherScore.m_bonusScore)
+    )); 
 }
 
 void TotalScore::printOn(std::ostream& strm) const

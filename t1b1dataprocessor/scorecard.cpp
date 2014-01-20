@@ -123,9 +123,13 @@ bool ScoreCard::operator<(const ScoreCard& otherScoreCard) const
   unsigned int nrOfTopAttempts = 0;
   unsigned int nrOfBonusAttempts = 0;
   
-  
+  unsigned int thisNrOfFinishedBoulders = 0;
   BOOST_FOREACH(BoulderScorePair localScore, m_boulderScoreMap)
   {
+    if (localScore.second->IsFinished())
+    {
+      thisNrOfFinishedBoulders++;
+    }
     if (localScore.second->IsTopHit())
     {
       nrOfTopHits++;
@@ -142,8 +146,14 @@ bool ScoreCard::operator<(const ScoreCard& otherScoreCard) const
   nrOfBonusHits = 0;
   nrOfTopAttempts = 0;
   nrOfBonusAttempts = 0;
+  
+  unsigned int otherNrOfFinishedBoulders = 0;  
   BOOST_FOREACH(BoulderScorePair localScore, otherScoreCard.m_boulderScoreMap)
   {
+    if (localScore.second->IsFinished())
+    {
+      otherNrOfFinishedBoulders++;
+    }   
     if (localScore.second->IsTopHit())
     {
       nrOfTopHits++;
@@ -159,7 +169,14 @@ bool ScoreCard::operator<(const ScoreCard& otherScoreCard) const
   
   if (*thisTotal == *otherTotal)
   {
-    return m_polePosition > otherScoreCard.m_polePosition;
+    if (thisNrOfFinishedBoulders < otherNrOfFinishedBoulders)
+    {
+      return true;
+    }
+    else
+    {
+      return m_polePosition > otherScoreCard.m_polePosition;
+    }
   }
   else
   {

@@ -6,11 +6,9 @@ using namespace std;
 namespace t1b1dataprocessor
 {
 
-PrimitiveScore::PrimitiveScore(bool hit, unsigned attempts, std::string prefix)
+PrimitiveScore::PrimitiveScore(bool hit, unsigned attempts, std::string prefix): 
+  m_finished(false), m_hit(hit), m_attempts(attempts), m_prefix(prefix)
 {
-  m_hit = hit;
-  m_attempts = attempts;
-  m_prefix = prefix;
   if (!m_hit && attempts != 0)
   {
     throw invalid_argument("attempts shall be zero when not hit");
@@ -38,9 +36,16 @@ bool PrimitiveScore::operator==(const PrimitiveScore& otherPrimitiveScore) const
 
 void PrimitiveScore::printOn(std::ostream& strm) const
 {
-    strm << m_prefix;
-    if (m_hit) strm << m_attempts;
-    else strm << "-";
+    if (m_finished)
+    {
+      strm << m_prefix;
+      if (m_hit) strm << m_attempts;
+      else strm << "-";
+    }
+    else
+    {
+      strm << "  ";
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const PrimitiveScore& aPrimitiveScore)

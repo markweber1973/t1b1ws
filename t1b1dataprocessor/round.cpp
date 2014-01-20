@@ -1,5 +1,6 @@
 #include "round.h"
 #include "scorecard.h"
+#include <iostream>
 #include <boost/foreach.hpp>
 #include <boost/iterator/indirect_iterator.hpp>
 
@@ -15,7 +16,7 @@ Round::Round(std::string name, unsigned int sequence, unsigned int nrOfBoulders,
 Round::~Round()
 {
 }
-
+#include <iostream>
 unsigned int Round::GetRoundId() const
 {
   return m_roundId;  
@@ -44,8 +45,6 @@ void Round::PrintScoreCards(std::ostream& strm) const
             std::greater<ScoreCard>());
   
   unsigned int rank = 1;
-  std::vector<boost::shared_ptr<ScoreCard> >::iterator scoreCardIt = localVector.begin();
-
   unsigned int vectorSize = localVector.size();
 
   for (unsigned int x = 0; x < vectorSize; x++)
@@ -64,7 +63,7 @@ void Round::PrintScoreCards(std::ostream& strm) const
       }
     }
   }  
-  
+
   BOOST_FOREACH(boost::shared_ptr<ScoreCard> localcard, localVector)
   {
     strm << *localcard;

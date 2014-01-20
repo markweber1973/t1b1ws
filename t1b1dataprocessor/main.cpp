@@ -198,7 +198,7 @@ void CreateAllPhasesInEvent(Event& event)
     std::string phaseId = GetWStringFromResultSet(phasesResultset, "phaseId");
     unsigned int sequence = GetUnsignedIntFromResultSet(phasesResultset, "sequence");    
     std::string phaseName = DeterminePhaseName(phaseId);
-    cout << phaseName << std::endl;
+    //cout << phaseName << std::endl;
     int intPhaseId = GetUnsignedIntFromResultSet(phasesResultset, "phaseId");    
     boost::shared_ptr<Phase> localPhase(new Phase(phaseName, sequence, intPhaseId));   
     event.AddPhase(localPhase);
@@ -211,7 +211,7 @@ void CreateAllPhasesInEvent(Event& event)
     {
       std::string roundId = GetWStringFromResultSet(roundResultset, "roundId");
       std::string roundName = DetermineRoundName(roundId);
-      cout << roundName << std::endl;      
+      //cout << roundName << std::endl;      
       unsigned int sequence = GetUnsignedIntFromResultSet(roundResultset, "sequence");
       unsigned int nrOfBoulders = GetUnsignedIntFromResultSet(roundResultset, "nrofboulders");
       unsigned int intRoundId = GetUnsignedIntFromResultSet(roundResultset, "roundId");
@@ -233,7 +233,8 @@ void CreateAllPhasesInEvent(Event& event)
            
       while (scoreResultset->next()) 
       {
-        unsigned int climberId = GetUnsignedIntFromResultSet(scoreResultset, "climberId");    
+        unsigned int climberId = GetUnsignedIntFromResultSet(scoreResultset, "climberId");
+        unsigned int polePosition = GetUnsignedIntFromResultSet(scoreResultset, "poleposition");
         boost::shared_ptr<Climber> localClimber( new Climber(climberId));
         localClimber->SetFirstname(GetWStringFromResultSet(scoreResultset, "firstname"));
         localClimber->SetLastname(GetWStringFromResultSet(scoreResultset, "lastname"));
@@ -242,7 +243,6 @@ void CreateAllPhasesInEvent(Event& event)
 
         std::string startNumber;
         startNumber = GetWStringFromResultSet(scoreResultset, "startnumber");
-        unsigned int polePosition = 0;
         
         boost::shared_ptr<EnrolledClimber> enrolledClimber(new EnrolledClimber(scoreResultset->getInt("startnumber"), localClimber));    
         boost::shared_ptr<ScoreCard> localScoreCard( new ScoreCard(enrolledClimber, localRound->GetNrOfBoulders(), polePosition));

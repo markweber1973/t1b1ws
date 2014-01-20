@@ -36,14 +36,26 @@ TEST(PrimitiveScoreTest, InvalidConstruction)
   ASSERT_THROW(boost::scoped_ptr<PrimitiveScore> fiveScore(new PrimitiveScore(false, 10, "B")), std::exception);  
 }
 
-TEST(PrimitiveScoreTest, TestOutputOperator) 
+TEST(PrimitiveScoreTest, TestOutputOperatorNotFinished) 
 {
   boost::scoped_ptr<PrimitiveScore> oneScore(new PrimitiveScore(true, 1, "B"));
   boost::scoped_ptr<PrimitiveScore> twoScore(new PrimitiveScore(false, 0, "T"));
-  
+  oneScore->SetFinished();  
+  twoScore->SetFinished();  
   std::ostringstream stream;
   stream << *twoScore << *oneScore;
   std::string str =  stream.str();
-  str.compare("B1");
   EXPECT_TRUE(str.compare("T-B1") == 0);
+}
+
+TEST(PrimitiveScoreTest, TestOutputOperatorFinished) 
+{
+  boost::scoped_ptr<PrimitiveScore> oneScore(new PrimitiveScore(false, 0, "B"));
+  boost::scoped_ptr<PrimitiveScore> twoScore(new PrimitiveScore(false, 0, "T"));
+
+  std::ostringstream stream;
+  stream << *twoScore << *oneScore;
+  std::string str =  stream.str();  
+  cout << str << std::endl;  
+  EXPECT_TRUE(str.compare("    ") == 0);
 }

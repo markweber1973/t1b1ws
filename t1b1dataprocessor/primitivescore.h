@@ -20,11 +20,13 @@ public:
   
   bool IsHit() const {return m_hit;};
   unsigned int GetAttempts() const {return m_attempts;};
+  bool SetFinished() {m_finished = true;}
 
 private:
   std::string m_prefix;
   bool m_hit;
   unsigned int m_attempts;
+  bool m_finished;
 };
 
 }
